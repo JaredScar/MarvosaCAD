@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MarvosaCAD MDT</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <section class="panel" aria-label="MarvosaCAD mobile data terminal">
+      <header>
+        <div>
+          <p class="brand">Marvosa<span>CAD</span></p>
+          <p class="sub" id="identity">Mobile data terminal</p>
+        </div>
+        <button id="close" type="button">Close</button>
+      </header>
+      <div class="status-row" id="statuses"></div>
+      <div class="grid">
+        <section>
+          <h2>Active calls</h2>
+          <div id="calls" class="list"></div>
+        </section>
+        <section>
+          <h2>BOLOs</h2>
+          <div id="bolos" class="list"></div>
+          <h2>Plate</h2>
+          <form id="plate-form" class="search">
+            <input id="plate" placeholder="84KPL221" autocomplete="off" />
+            <button type="submit">Run</button>
+          </form>
+          <div id="plate-result"></div>
+          <h2>Name</h2>
+          <form id="person-form" class="search">
+            <input id="person" placeholder="Hale" autocomplete="off" />
+            <button type="submit">Run</button>
+          </form>
+          <div id="person-result"></div>
+        </section>
+      </div>
+    </section>
+    <script src="app.js"></script>
+  </body>
+</html>

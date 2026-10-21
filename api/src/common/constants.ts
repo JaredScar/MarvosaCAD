@@ -1,0 +1,10 @@
+export const ROLES = ['admin', 'dispatcher', 'officer'] as const;
+export const CALL_TYPES = ['911', 'traffic', 'medical', 'fire', 'disturbance', 'theft', 'pursuit', 'other'] as const;
+export const CALL_STATUSES = ['pending', 'dispatched', 'enroute', 'onscene', 'closed'] as const;
+export const UNIT_STATUSES = ['available', 'busy', 'enroute', 'onscene', 'offduty', 'panic'] as const;
+export const UNIT_TYPES = ['leo', 'ems', 'fire'] as const;
+export const DEPARTMENTS = ['LSPD', 'BCSO', 'SAHP', 'LSFD', 'EMS'] as const;
+export const BOLO_KINDS = ['person', 'vehicle'] as const;
+export const BOLO_RISKS = ['low', 'medium', 'high', 'armed'] as const;
+export const LICENSE_STATES = ['valid', 'suspended', 'revoked', 'none'] as const;
+export const RECORD_STATES = ['valid', 'expired', 'none'] as const;

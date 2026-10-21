@@ -1,0 +1,11 @@
+node_modules/
+.tools/
+dist/
+*.db
+*.db-journal
+.angular/
+.env
+.env.*
+!.env.example
+legacy-template/
+*.tsbuildinfo

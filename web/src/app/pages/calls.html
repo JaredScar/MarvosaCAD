@@ -1,0 +1,70 @@
+<div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="kicker">Dispatch</p>
+    <h1 class="mb-0 mt-1 text-2xl font-semibold">Calls</h1>
+  </div>
+  <p-button label="New call" icon="pi pi-plus" (onClick)="openCreate()" />
+</div>
+
+<div class="mb-4 flex flex-wrap gap-3">
+  <p-iconfield>
+    <p-inputicon class="pi pi-search" />
+    <input pInputText placeholder="Search calls" (input)="onQuery($event)" />
+  </p-iconfield>
+  <p-select [options]="statuses" optionLabel="label" optionValue="value" [ngModel]="status()" (ngModelChange)="status.set($event)" appendTo="body" />
+</div>
+
+<div class="page-card overflow-hidden">
+  <p-table [value]="filtered()" [paginator]="true" [rows]="8" styleClass="text-sm" [rowHover]="true">
+    <ng-template #header>
+      <tr>
+        <th>Call</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Type</th>
+        <th>Location</th>
+        <th>Units</th>
+        <th>Opened</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-call>
+      <tr class="cursor-pointer" [routerLink]="['/calls', call.id]">
+        <td>
+          <div class="font-semibold">#{{ call.number }}</div>
+          <div>{{ call.title }}</div>
+        </td>
+        <td><p-tag [value]="'P' + call.priority" [severity]="prioritySeverity(call.priority)" /></td>
+        <td><p-tag [value]="labelFor(call.status)" [severity]="callSeverity(call.status)" /></td>
+        <td>{{ labelFor(call.type) }}</td>
+        <td>{{ call.location }}</td>
+        <td>{{ callsigns(call) }}</td>
+        <td>{{ call.createdAt | date: 'MMM d, HH:mm' }}</td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr><td colspan="7">No calls match this view.</td></tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog header="New call" [(visible)]="visible" [modal]="true" [style]="{ width: '36rem' }" [dismissableMask]="true">
+  <form class="flex flex-col gap-3" [formGroup]="form" (ngSubmit)="save()">
+    <p-fluid class="flex flex-col gap-3">
+      <label class="field"><span>Title</span><input pInputText formControlName="title" /></label>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <label class="field"><span>Type</span><p-select formControlName="type" [options]="callTypes" optionLabel="label" optionValue="value" appendTo="body" /></label>
+        <label class="field"><span>Priority</span><p-select formControlName="priority" [options]="priorities" optionLabel="label" optionValue="value" appendTo="body" /></label>
+      </div>
+      <label class="field"><span>Location</span><input pInputText formControlName="location" /></label>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <label class="field"><span>Postal</span><input pInputText formControlName="postal" /></label>
+        <label class="field"><span>Caller</span><input pInputText formControlName="caller" /></label>
+      </div>
+      <label class="field"><span>Details</span><textarea pTextarea formControlName="description" rows="4"></textarea></label>
+    </p-fluid>
+    <div class="flex justify-end gap-2">
+      <p-button type="button" label="Cancel" severity="secondary" [text]="true" (onClick)="visible = false" />
+      <p-button type="submit" label="Open call" [loading]="busy" [disabled]="form.invalid" />
+    </div>
+  </form>
+</p-dialog>

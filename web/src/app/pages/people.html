@@ -1,0 +1,64 @@
+<div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="kicker">Records</p>
+    <h1 class="mb-0 mt-1 text-2xl font-semibold">People</h1>
+  </div>
+  <p-button label="Add person" icon="pi pi-plus" (onClick)="openCreate()" />
+</div>
+
+<input class="mb-4" pInputText placeholder="Search name, phone, or address" (input)="onQuery($event)" />
+
+<div class="page-card overflow-hidden">
+  <p-table [value]="filtered()" [paginator]="true" [rows]="8" styleClass="text-sm" [rowHover]="true">
+    <ng-template #header>
+      <tr>
+        <th>Name</th>
+        <th>Date of birth</th>
+        <th>License</th>
+        <th>Flags</th>
+        <th>Warrants</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-person>
+      <tr class="cursor-pointer" (click)="openEdit(person)">
+        <td>
+          <div class="font-semibold">{{ person.lastName }}, {{ person.firstName }}</div>
+          <div class="text-[var(--p-text-muted-color)]">{{ person.address || person.phone || 'No address' }}</div>
+        </td>
+        <td>{{ person.dob }}</td>
+        <td><p-tag [value]="labelFor(person.license)" [severity]="person.license === 'valid' ? 'success' : 'danger'" /></td>
+        <td>
+          <div class="flex flex-wrap gap-1">
+            @for (flag of splitFlags(person.flags); track flag) {
+              <p-tag [value]="flag" severity="warn" />
+            }
+          </div>
+        </td>
+        <td>{{ warrantsFor(person.id).length }}</td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr><td colspan="5">No matching people.</td></tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog [header]="editing ? 'Edit person' : 'Add person'" [(visible)]="visible" [modal]="true" [style]="{ width: '38rem' }" [dismissableMask]="true">
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <p-fluid class="grid gap-3 sm:grid-cols-2">
+      <label class="field"><span>First name</span><input pInputText formControlName="firstName" /></label>
+      <label class="field"><span>Last name</span><input pInputText formControlName="lastName" /></label>
+      <label class="field"><span>Date of birth</span><input pInputText formControlName="dob" placeholder="YYYY-MM-DD" /></label>
+      <label class="field"><span>Gender</span><p-select formControlName="gender" [options]="genders" optionLabel="label" optionValue="value" appendTo="body" /></label>
+      <label class="field"><span>Phone</span><input pInputText formControlName="phone" /></label>
+      <label class="field"><span>License</span><p-select formControlName="license" [options]="licenses" optionLabel="label" optionValue="value" appendTo="body" /></label>
+      <label class="field sm:col-span-2"><span>Address</span><input pInputText formControlName="address" /></label>
+      <label class="field sm:col-span-2"><span>Flags</span><input pInputText formControlName="flags" placeholder="Comma separated" /></label>
+      <label class="field sm:col-span-2"><span>Notes</span><textarea pTextarea rows="3" formControlName="notes"></textarea></label>
+    </p-fluid>
+    <div class="mt-4 flex justify-end gap-2">
+      <p-button type="button" label="Cancel" [text]="true" severity="secondary" (onClick)="visible = false" />
+      <p-button type="submit" label="Save" [loading]="busy" [disabled]="form.invalid" />
+    </div>
+  </form>
+</p-dialog>

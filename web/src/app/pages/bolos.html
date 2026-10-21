@@ -1,0 +1,58 @@
+<div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="kicker">Be on the lookout</p>
+    <h1 class="mb-0 mt-1 text-2xl font-semibold">BOLOs</h1>
+  </div>
+  <div class="flex items-center gap-2">
+    <p-select [options]="filters" optionLabel="label" optionValue="value" [ngModel]="show()" (ngModelChange)="show.set($event)" />
+    <p-button label="New BOLO" icon="pi pi-plus" (onClick)="openCreate()" />
+  </div>
+</div>
+
+<div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  @for (bolo of visibleBolos(); track bolo.id) {
+    <article class="page-card flex flex-col p-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="kicker">{{ labelFor(bolo.kind) }}</p>
+          <h2 class="mb-0 mt-1 text-lg">{{ bolo.title }}</h2>
+        </div>
+        <p-tag [value]="labelFor(bolo.risk)" [severity]="riskSeverity(bolo.risk)" />
+      </div>
+      <p class="flex-1">{{ bolo.description }}</p>
+      <dl class="grid grid-cols-2 gap-2 text-sm">
+        <div><dt class="text-[var(--p-text-muted-color)]">Subject</dt><dd class="m-0 font-semibold">{{ bolo.subject || '—' }}</dd></div>
+        <div><dt class="text-[var(--p-text-muted-color)]">Plate</dt><dd class="m-0 font-semibold">{{ bolo.plate || '—' }}</dd></div>
+      </dl>
+      <div class="mt-3 flex items-center justify-between text-xs text-[var(--p-text-muted-color)]">
+        <span>{{ bolo.createdAt | date: 'MMM d, HH:mm' }}</span>
+        @if (bolo.active) {
+          <p-button label="Clear" size="small" [text]="true" (onClick)="clear(bolo.id)" />
+        } @else {
+          <span>Cleared</span>
+        }
+      </div>
+    </article>
+  } @empty {
+    <p class="text-[var(--p-text-muted-color)]">No BOLOs in this view.</p>
+  }
+</div>
+
+<p-dialog header="New BOLO" [(visible)]="visible" [modal]="true" [style]="{ width: '34rem' }" [dismissableMask]="true">
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <p-fluid class="flex flex-col gap-3">
+      <div class="grid gap-3 sm:grid-cols-2">
+        <label class="field"><span>Kind</span><p-select formControlName="kind" [options]="kinds" optionLabel="label" optionValue="value" appendTo="body" /></label>
+        <label class="field"><span>Risk</span><p-select formControlName="risk" [options]="risks" optionLabel="label" optionValue="value" appendTo="body" /></label>
+      </div>
+      <label class="field"><span>Title</span><input pInputText formControlName="title" /></label>
+      <label class="field"><span>Subject</span><input pInputText formControlName="subject" /></label>
+      <label class="field"><span>Plate</span><input pInputText formControlName="plate" /></label>
+      <label class="field"><span>Details</span><textarea pTextarea rows="4" formControlName="description"></textarea></label>
+    </p-fluid>
+    <div class="mt-4 flex justify-end gap-2">
+      <p-button type="button" label="Cancel" [text]="true" severity="secondary" (onClick)="visible = false" />
+      <p-button type="submit" label="Broadcast" [loading]="busy" [disabled]="form.invalid" />
+    </div>
+  </form>
+</p-dialog>

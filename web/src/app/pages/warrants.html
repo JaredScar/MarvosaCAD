@@ -1,0 +1,62 @@
+<div class="mb-5 flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <p class="kicker">Records</p>
+    <h1 class="mb-0 mt-1 text-2xl font-semibold">Warrants</h1>
+  </div>
+  <div class="flex items-center gap-2">
+    <p-select [options]="filters" optionLabel="label" optionValue="value" [ngModel]="show()" (ngModelChange)="show.set($event)" />
+    <p-button label="Issue warrant" icon="pi pi-plus" (onClick)="openCreate()" />
+  </div>
+</div>
+
+<div class="page-card overflow-hidden">
+  <p-table [value]="rows()" [paginator]="true" [rows]="8" styleClass="text-sm">
+    <ng-template #header>
+      <tr>
+        <th>Person</th>
+        <th>Charge</th>
+        <th>Issued by</th>
+        <th>Issued</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-warrant>
+      <tr>
+        <td class="font-semibold">{{ warrant.person ? warrant.person.lastName + ', ' + warrant.person.firstName : 'Unknown' }}</td>
+        <td>
+          <div>{{ warrant.charge }}</div>
+          @if (warrant.notes) {
+            <div class="text-[var(--p-text-muted-color)]">{{ warrant.notes }}</div>
+          }
+        </td>
+        <td>{{ warrant.issuedBy }}</td>
+        <td>{{ warrant.issuedAt | date: 'MMM d, y' }}</td>
+        <td><p-tag [value]="warrant.active ? 'Active' : 'Cleared'" [severity]="warrant.active ? 'danger' : 'secondary'" /></td>
+        <td>
+          @if (warrant.active) {
+            <p-button label="Clear" size="small" [text]="true" (onClick)="serve(warrant.id)" />
+          }
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr><td colspan="6">No warrants in this view.</td></tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<p-dialog header="Issue warrant" [(visible)]="visible" [modal]="true" [style]="{ width: '32rem' }" [dismissableMask]="true">
+  <form [formGroup]="form" (ngSubmit)="save()">
+    <p-fluid class="flex flex-col gap-3">
+      <label class="field"><span>Person</span><p-select formControlName="personId" [options]="people()" optionLabel="label" optionValue="value" [filter]="true" appendTo="body" placeholder="Select a person" /></label>
+      <label class="field"><span>Charge</span><input pInputText formControlName="charge" /></label>
+      <label class="field"><span>Issued by</span><input pInputText formControlName="issuedBy" /></label>
+      <label class="field"><span>Notes</span><textarea pTextarea rows="3" formControlName="notes"></textarea></label>
+    </p-fluid>
+    <div class="mt-4 flex justify-end gap-2">
+      <p-button type="button" label="Cancel" [text]="true" severity="secondary" (onClick)="visible = false" />
+      <p-button type="submit" label="Issue" [loading]="busy" [disabled]="form.invalid" />
+    </div>
+  </form>
+</p-dialog>

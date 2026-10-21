@@ -1,0 +1,73 @@
+<p-toast position="top-right" />
+<p-confirmDialog />
+<div class="app-shell">
+  <aside class="sidebar">
+    <a routerLink="/dashboard" class="logo-chip mb-4">
+      <img src="logo.png" alt="MarvosaCAD" />
+    </a>
+    <nav class="flex flex-1 flex-col gap-1" aria-label="Sections">
+      @for (item of sections(); track item.path) {
+        <a class="nav-link" [routerLink]="item.path" routerLinkActive="active" ariaCurrentWhenActive="page">
+          <i [class]="item.icon" aria-hidden="true"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+    <p class="mt-4 px-2 text-xs text-[var(--p-text-muted-color)]">San Andreas emergency communications</p>
+  </aside>
+
+  <div class="flex min-w-0 flex-col">
+    <header class="topbar">
+      <div class="flex items-center gap-3 text-sm">
+        <span class="live-dot" [class.on]="realtime.connected()"></span>
+        <span>{{ realtime.connected() ? 'Live' : 'Connecting' }}</span>
+        <span class="text-[var(--p-text-muted-color)]">{{ now() | date: 'EEE HH:mm:ss' }}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="text-right text-sm leading-tight">
+          <div class="font-semibold">{{ auth.user()?.name }}</div>
+          <div class="mt-1 flex items-center justify-end gap-2">
+            <p-tag [value]="roleLabel()" [severity]="auth.isAdmin() ? 'warn' : 'secondary'" />
+            @if (auth.user()?.callsign) {
+              <span class="text-[var(--p-text-muted-color)]">{{ auth.user()?.callsign }}</span>
+            }
+          </div>
+        </div>
+        <p-button [icon]="dark() ? 'pi pi-sun' : 'pi pi-moon'" [text]="true" [rounded]="true" (onClick)="toggleTheme()" ariaLabel="Toggle color mode" />
+        <p-button icon="pi pi-sign-out" label="Sign out" [text]="true" (onClick)="auth.logout()" />
+      </div>
+    </header>
+
+    @if (state.activePanics().length) {
+      <div class="panic-banner">
+        @for (alert of state.activePanics(); track alert.id) {
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <p class="m-0">
+              <strong class="tracking-widest">PANIC</strong>
+              {{ alert.callsign }} · {{ alert.officerName }}
+              @if (alert.location) {
+                <span> · {{ alert.location }}</span>
+              }
+              — {{ alert.message }}
+            </p>
+            <p-button label="Clear" severity="contrast" size="small" (onClick)="clearPanic(alert.id)" />
+          </div>
+        }
+      </div>
+    }
+
+    <main class="min-w-0 flex-1 p-5 md:p-6">
+      @if (state.loading() && !state.calls().length) {
+        <p class="text-[var(--p-text-muted-color)]">Loading the board…</p>
+      } @else if (state.error()) {
+        <div class="page-card max-w-xl p-6">
+          <h1 class="mt-0 text-xl">The board did not load</h1>
+          <p>{{ state.error() }}</p>
+          <p-button label="Try again" (onClick)="state.load()" />
+        </div>
+      } @else {
+        <router-outlet />
+      }
+    </main>
+  </div>
+</div>

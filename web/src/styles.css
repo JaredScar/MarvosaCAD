@@ -1,0 +1,171 @@
+@import 'tailwindcss';
+@import '@openng/optimus-ui-tailwindcss';
+
+@custom-variant dark (&:where(.app-dark, .app-dark *));
+
+@theme {
+  --font-sans: 'Barlow', 'Segoe UI', sans-serif;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+html.app-dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: 'Barlow', 'Segoe UI', sans-serif;
+  background: var(--p-surface-50, #f4f7fb);
+  color: var(--p-text-color, #0f172a);
+}
+
+html.app-dark body {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(47, 111, 173, 0.22), transparent 55%),
+    var(--p-surface-950, #07111f);
+}
+
+.logo-chip {
+  display: inline-flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 14px;
+  padding: 0.45rem 0.75rem;
+}
+
+.logo-chip img {
+  display: block;
+  height: 42px;
+  width: auto;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 16rem minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.1rem 0.85rem;
+  border-right: 1px solid var(--p-content-border-color);
+  background: color-mix(in srgb, var(--p-surface-900) 88%, black);
+}
+
+html:not(.app-dark) .sidebar {
+  background: #fff;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 0.8rem;
+  padding: 0.7rem 0.8rem;
+  color: var(--p-text-muted-color);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: color-mix(in srgb, var(--p-primary-color) 16%, transparent);
+  color: var(--p-primary-color);
+}
+
+.topbar,
+.page-card,
+.stat-card,
+.unit-card {
+  border: 1px solid var(--p-content-border-color);
+  background: var(--p-content-background);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-width: 0 0 1px;
+}
+
+.stat-card,
+.unit-card,
+.page-card {
+  border-radius: 1rem;
+}
+
+.stat-card,
+.unit-card {
+  padding: 1rem 1.1rem;
+}
+
+.kicker {
+  margin: 0;
+  color: #e8872a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field > span,
+.field > label {
+  color: var(--p-text-muted-color);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.panic-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.75rem 1.25rem;
+  background: #9f1239;
+  color: white;
+}
+
+.live-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #f59e0b;
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+}
+
+.live-dot.on {
+  background: #34d399;
+  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.15);
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  .sidebar nav {
+    display: flex;
+    gap: 0.25rem;
+  }
+}

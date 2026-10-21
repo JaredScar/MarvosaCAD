@@ -1,0 +1,104 @@
+<div class="mb-5 flex items-end justify-between gap-4">
+  <div>
+    <p class="kicker">Live board</p>
+    <h1 class="mb-0 mt-1 text-2xl font-semibold">Marvosa County</h1>
+    @if (auth.isAdmin()) {
+      <p class="mb-0 mt-2 max-w-xl text-sm text-[var(--p-text-muted-color)]">Administrator access includes this board plus staff accounts and the unit roster.</p>
+    } @else {
+      <p class="mb-0 mt-2 max-w-xl text-sm text-[var(--p-text-muted-color)]">Dispatcher access covers calls, unit status, BOLOs, and records. Staff accounts and new units stay with an administrator.</p>
+    }
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    @if (auth.isAdmin()) {
+      <a routerLink="/staff"><p-button label="Manage staff" icon="pi pi-cog" severity="secondary" /></a>
+    }
+    <a routerLink="/calls"><p-button label="Open calls" icon="pi pi-arrow-right" iconPos="right" /></a>
+  </div>
+</div>
+
+<div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+  <article class="stat-card">
+    <p class="kicker">Open calls</p>
+    <p class="mb-0 mt-2 text-3xl font-semibold">{{ state.openCalls().length }}</p>
+  </article>
+  <article class="stat-card">
+    <p class="kicker">Available units</p>
+    <p class="mb-0 mt-2 text-3xl font-semibold">{{ available() }}</p>
+  </article>
+  <article class="stat-card">
+    <p class="kicker">Active BOLOs</p>
+    <p class="mb-0 mt-2 text-3xl font-semibold">{{ activeBolos() }}</p>
+  </article>
+  <article class="stat-card">
+    <p class="kicker">Panic</p>
+    <p class="mb-0 mt-2 text-3xl font-semibold">{{ state.activePanics().length }}</p>
+  </article>
+</div>
+
+<div class="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(18rem,0.9fr)]">
+  <section class="page-card overflow-hidden">
+    <div class="flex items-center justify-between px-4 pt-4">
+      <h2 class="m-0 text-lg">Active calls</h2>
+    </div>
+    <p-table [value]="state.openCalls()" styleClass="text-sm" [rowHover]="true">
+      <ng-template #header>
+        <tr>
+          <th>Call</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Location</th>
+          <th>Units</th>
+        </tr>
+      </ng-template>
+      <ng-template #body let-call>
+        <tr class="cursor-pointer" [routerLink]="['/calls', call.id]">
+          <td>
+            <div class="font-semibold">#{{ call.number }} {{ call.title }}</div>
+            <div class="text-[var(--p-text-muted-color)]">{{ labelFor(call.type) }}</div>
+          </td>
+          <td><p-tag [value]="'P' + call.priority" [severity]="prioritySeverity(call.priority)" /></td>
+          <td><p-tag [value]="labelFor(call.status)" [severity]="callSeverity(call.status)" /></td>
+          <td>{{ call.location }}</td>
+          <td>{{ callsigns(call) }}</td>
+        </tr>
+      </ng-template>
+      <ng-template #emptymessage>
+        <tr><td colspan="5">No open calls.</td></tr>
+      </ng-template>
+    </p-table>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    @for (group of departments(); track group[0]) {
+      <article class="unit-card">
+        <h2 class="m-0 text-sm font-semibold">{{ departmentName[group[0]] ?? group[0] }}</h2>
+        <div class="mt-3 flex flex-col gap-2">
+          @for (unit of group[1]; track unit.id) {
+            <div class="flex items-center justify-between gap-2 text-sm">
+              <div>
+                <div class="font-semibold">{{ unit.callsign }}</div>
+                <div class="text-[var(--p-text-muted-color)]">{{ unit.officerName }}</div>
+              </div>
+              <p-tag [value]="labelFor(unit.status)" [severity]="callSeverity(unit.status)" />
+            </div>
+          }
+        </div>
+      </article>
+    }
+  </section>
+</div>
+
+<section class="page-card mt-5 p-4">
+  <h2 class="mt-0 text-lg">Latest notes</h2>
+  <div class="flex flex-col gap-3">
+    @for (note of activity(); track note.id) {
+      <a class="no-underline" [routerLink]="['/calls', note.callId]">
+        <div class="text-sm font-semibold">#{{ note.callNumber }} · {{ note.callTitle }}</div>
+        <div class="text-sm">{{ note.body }}</div>
+        <div class="text-xs text-[var(--p-text-muted-color)]">{{ note.author }} · {{ note.createdAt | date: 'MMM d, HH:mm' }}</div>
+      </a>
+    } @empty {
+      <p class="text-[var(--p-text-muted-color)]">Notes from the board will show up here.</p>
+    }
+  </div>
+</section>
